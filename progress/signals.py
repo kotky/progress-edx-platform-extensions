@@ -14,8 +14,6 @@ from opaque_keys.edx.locator import BlockUsageLocator
 from student.roles import get_aggregate_exclusion_user_ids
 from util.signals import course_deleted
 
-from course_metadata.utils import is_progress_detached_vertical
-
 from progress.models import StudentProgress, StudentProgressHistory, CourseModuleCompletion
 
 from xmodule.modulestore.django import modulestore
@@ -92,3 +90,19 @@ def on_course_deleted(sender, **kwargs):  # pylint: disable=W0613
     CourseModuleCompletion.objects.filter(course_id=unicode(course_key)).delete()
     StudentProgress.objects.filter(course_id=course_key).delete()
     StudentProgressHistory.objects.filter(course_id=course_key).delete()
+
+
+def is_progress_detached_vertical(vertical):
+    """
+    Returns boolean indicating if vertical is valid for progress calculations
+    If a vertical has any children belonging to PROGRESS_DETACHED_VERTICAL_CATEGORIES
+    it should be ignored for progress calculation
+    """
+    detached_vertical_categories = getattr(settings, 'PROGRESS_DETACHED_VERTICAL_CATEGORIES', [])
+    if not hasattr(vertical, 'children'):
+        vertical = modulestore().get_item(vertical, 1)
+    for unit in vertical.children:
+        if getattr(unit, 'category') in detached_vertical_categories:
+            return True
+    return False
+    
