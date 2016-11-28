@@ -98,7 +98,7 @@ def handle_progress_pre_save_signal(sender, instance, **kwargs):  # pylint: disa
     Handle the pre-save ORM event on CourseModuleCompletions
     """
 
-    if settings.FEATURES['ENABLE_NOTIFICATIONS']:
+    if settings.FEATURES.get('ENABLE_NOTIFICATIONS'):
         # If notifications feature is enabled, then we need to get the user's
         # rank before the save is made, so that we can compare it to
         # after the save and see if the position changes
@@ -115,7 +115,7 @@ def handle_progress_post_save_signal(sender, instance, **kwargs):  # pylint: dis
     Handle the pre-save ORM event on CourseModuleCompletions
     """
 
-    if settings.FEATURES['ENABLE_NOTIFICATIONS']:
+    if settings.FEATURES.get('ENABLE_NOTIFICATIONS'):
         # If notifications feature is enabled, then we need to get the user's
         # rank before the save is made, so that we can compare it to
         # after the save and see if the position changes
